@@ -1,0 +1,2 @@
+include pom.xml
+include maprdb/dependency/*.jar
