@@ -142,6 +142,29 @@ containing a non-numeric value.
 
 `m.delete(field)` Deletes a field in a document
 
+Mutations should also support being constructed using the
+micro-language supported by the JS API. In this micro-language, a
+mutation can be specified using a dict where the fields to be mutated
+are the keys and the values are objects which describe what is to be
+changed. The values can be scalars (which is a short-hand for a
+$setOrReplace operation) or objects. Setting a field unconditionally
+to a scalar value can be done using a short-cut
+
+```javascript
+{"field": 3}   // set or replace age to 34
+```
+
+But most updates require a more elaborate syntax
+
+```json
+{"field" : { "$set" : "value"}  }
+{ "field" : { "$append" : "value" }}
+{"age" : { "$inc" : 1 } } //  increment one value by a specified amount
+```
+
+See the wiki page on the [mutation micro language](https://github.com/mapr-demos/js-bindings/wiki/Mutation-micro-language)
+for more details.
+
 ## maprdb.Condition operations
 
 A condition is a specification of which documents are desired in a
@@ -187,74 +210,35 @@ Example:
     c = Condition({“country”:”us”})
      c = Condition({
            “amount”:{“<”:1000}}, 
-           “address”, {“$like”:”1024 V.*”}})
+           “address”, {“$matches”:”1024 V.*”}})
 ```
 ## Sample conditions
 
-Equality with a scalar value can have a short-cut expression:
-```python
-{ "country" : "China" } // country = "China" (or country[] = "China")
+Conditions are created fairly conventionally and have several forms of
+short-cuts to handle very common cases. In general, a condition looks
+like a mirror of some of the fields in the document except that values
+are replaced by comparison functions. The most common short-cut is
+that scalar values are short-cuts for an equality test with those
+values.
+
+For example, equality with a scalar value can have a short-cut expression:
+
+```json
+{ "country" : "China" } // country == "China"
 ```
 
-But testing for equality with structures is not allowed:
+Test for structured values like this:
 
-~~`{ "country" : ["China", "United States"] }`~~
-
-~~`{ "country" : {"bag": "China"} }`~~
-
-Instead, do this:
-```python
+```json
 { "country" : {"$eq": ["China","United States"]} } 
 ```
 
-Other tests are also available
-```python
-{ "age" : { "$gt" : 34 } } // age > 34
-{ "age" : { "$gte" : 34 } } // age >= 34
-{ "age" : { "$lt" : 34 } } // age < 34
-{ "age" : { "$lte" : 34 } } // age <= 34
-{ "age" : { "$neq" : 34 } } // age != 34
-{ "age" : { "$between" : [30,40] } } // BETWEEN 30 and 40 (inclusive)
-{ "age" : { "$in" : [20,25,30] } } // IN [20, 25, 30]
-{ "age" : { "$exists" : true} }
-{ "age" : { "$exists" : false} }
-```
+Many other tests are also available.  See
+the wiki page on [the condition micro language](https://github.com/mapr-demos/js-bindings/wiki/Condition-Micro-Language)
+for more details.
 
-The complete list of available operators is:
 
-|Operator  |   Meaning   |
-|----------|-------------|
-|$eq, $equal, = |Is equal to. No implicit conversion of types is done. Note that comparison with null is done as in Java, not as in SQL.  This means that null == null.|
-|$ne, $neq, != |Not equal to. |
-|$lt, $less, <|	Less than. Should work for either strings or numbers, but comparing strings to numbers is not defined.|
-|$lte, $le, <=| Less than or equal.|
-|$gt, $greater, > | Greater than.|
-|$ge, $gte, >= | Greater than or equal.|
-|$between | The value of the field should be a list of two values. {x: {$between:[u,v]}} is equivalent to {x: {$ge:u}, x:{$le:v}}.|
-|$in | The value of the field is in a literal list. {x: {$in: [1,2,34]}} is true if x is any of 1, 2 or 34.|
-|!$in | Not in. |
-| $exists | The field exists or not according to the the value supplied. Note that missing is different from null.|
-| $like, $matches | The value of the field matches a regular expression.|
-| !$like, !$matches | The value of the field does not match a regularexpression. |
-----------------------------------------------------------------
-
-If you want to set a condition on multiple fields, simply include all of the tests in a single object
-```python
-{ "country" : "China", "age" : 34 } // country = "China" AND age = 34
-```
-
-Note that if you need multiple conditions on a single field, it can appear more than once in a condition expression
-```python
-{ "country" : "China", "age": {"$and":[{$ge:30}, {$lt:40}]} } 
-```
-
-In contrast, if you want any of several conditions to be satisfied, simply put all the alternatives in a list.
-```python
-[ condition1, condition2, ... ] // condition1 OR condition2
-```
-
-Extension of this mechanism to other tests is an area of active discussion.
-Required
+# Required
 1. Idiomatic Python interface
 2. Native maps and lists should translate into appropriate API concepts
 3. Must support generator/iterator style for
@@ -267,7 +251,7 @@ Required
 1. The most most straightforward way to implement this API may be through the use of a Java/Python gateway module, such as is described in the next section.
 
 
-Using a JNI Gateway to call Python from Java
+### Using a JNI Gateway to call Python from Java
 
 
 The Java Native Interface (JNI) is a mechanism that allows application code to call Java code running in a JVM instance.  There are several freely available packages, with various open-source licenses, that implement this functionality for common languages such as Python and C++.  Some of the architectures require maintaining an external server ‘gateway’, by hand, that runs as a separate process. An external gateway is not an acceptable solution.
