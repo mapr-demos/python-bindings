@@ -4,49 +4,42 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.mapr.maprdb.pymaprdb</groupId>
+  <groupId>com.mapr</groupId>
   <artifactId>PYmaprdb</artifactId>
   <version>1.0-SNAPSHOT</version>
 
+  <repositories>
+    <repository>
+      <id>central</id>
+      <url>http://repo.maven.apache.org/maven2/</url>
+      <snapshots><enabled>true</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+    </repository>
 
-    <repositories>
+    <repository>
+      <id>mapr-releases</id>
+      <url>http://repository.mapr.com/maven/</url>
+      <snapshots><enabled>true</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+    </repository>
 
-        <repository>
-            <id>central</id>
-            <url>http://repo.maven.apache.org/maven2/</url>
-            <snapshots><enabled>true</enabled></snapshots>
-            <releases><enabled>true</enabled></releases>
-        </repository>
+    <repository>
+      <id>mapr-private</id>
+      <url> http://repository_cv.mapr.com/maven/</url>
+      <snapshots><enabled>true</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+    </repository>
+  </repositories>
 
-        <repository>
-            <id>mapr-releases</id>
-            <url>http://repository.mapr.com/maven/</url>
-            <snapshots><enabled>true</enabled></snapshots>
-            <releases><enabled>true</enabled></releases>
-        </repository>
+  <dependencies>
+    <dependency>
+      <groupId>com.mapr.db</groupId>
+      <artifactId>maprdb</artifactId>
+      <version>4.14.14-jsonmerge-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
 
-        <repository>
-            <id>mapr-private</id>
-            <url> http://repository_cv.mapr.com/maven/</url>
-            <snapshots><enabled>true</enabled></snapshots>
-            <releases><enabled>true</enabled></releases>
-        </repository>
-
-    </repositories>
-
-    <dependencies>
-
-
-        <dependency>
-            <groupId>com.mapr.db</groupId>
-            <artifactId>maprdb</artifactId>
-            <version>4.14.14-jsonmerge-SNAPSHOT</version>
-        </dependency>
-
-
-
-    </dependencies>
-    <build>
-      <directory>maprdb</directory>
-    </build>
+  <build>
+    <directory>maprdb</directory>
+  </build>
 </project>
