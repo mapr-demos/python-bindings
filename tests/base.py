@@ -1,11 +1,12 @@
 import unittest
 import logging
-import jpype
 from tests.utils import maprdb_connect
 
 
 class BaseMapRDBTest(unittest.TestCase):
-
+    """
+    Base test class, opens connection to MapRDB.
+    """
     def setUp(self):
         try:
             self.connection = maprdb_connect()

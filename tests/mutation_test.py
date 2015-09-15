@@ -1,20 +1,13 @@
 import unittest
 import logging
-from maprdb.mutation import Mutation
-from tests.utils import maprdb_connect
+from maprdb import Mutation
+from tests.base import BaseMapRDBTest
 
 """
 TODO: rewrite this test using Table class to actually do something in DB.
 When table class is implemented
 """
-class TestConnection(unittest.TestCase):
-
-    def setUp(self):
-        try:
-            self.connection = maprdb_connect()
-        except:
-            self.fail("connection() raised unexpected exception")
-
+class TestConnection(BaseMapRDBTest):
     def test_append(self):
         mutation = Mutation().set("sfasfa",[542.3,12.3,4.4,12.5])\
         .set("address.line", "{'a':2,'b':3}")\

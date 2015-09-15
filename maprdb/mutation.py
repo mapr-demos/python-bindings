@@ -49,5 +49,8 @@ class Mutation(object):
         
     @handle_java_exceptions
     def build(self):
-        result = Mutation(self.java_mutation.build())
+        result = self.java_mutation.build()
         return Mutation(result)
+      
+    def _get_java_object(self):
+        return self.java_mutation

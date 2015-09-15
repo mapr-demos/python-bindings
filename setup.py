@@ -27,6 +27,7 @@ setup(
     ],
     install_requires=[
         "JPype1==0.6.1",
+        "multipledispatch"
     ],
 
     package_data={

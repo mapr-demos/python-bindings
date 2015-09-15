@@ -13,7 +13,9 @@ logger = logging.getLogger(__name__)
 
 def connect(mapr_home=None, **connection_info):
     """
-    Connect to MapRDB
+    Connect to MapRDB.
+    :arg mapr_home is -Dmapr.home.dir argument to JVM. Should point to the directory
+    with 'conf/mapr-cluster.conf' file.
     :return: Connection object
     """
     info = connection_info.copy()
@@ -24,7 +26,9 @@ def connect(mapr_home=None, **connection_info):
 
 class Connection(object, metaclass=Singleton):
     """
-    MapRDB Connection business delegate.
+    MapRDB Connection object.
+    Represents both connection to JVM and MapRDB class.
+    Wrapper for com.mapr.db.MapRDB.
     """
     def __init__(self, conn_info, options=None):
         if not options:
