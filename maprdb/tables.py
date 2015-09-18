@@ -1,26 +1,10 @@
-from maprdb.utils import handle_java_exceptions, python_to_java_cast, MapRDBError
+from maprdb.utils import handle_java_exceptions, python_to_java_cast, MapRDBError, java_to_python_cast
 from maprdb.document import Document
 import copy
 
 class Table(object):
     def __init__(self, java_table):
         self.java_table = java_table
-    
-    @handle_java_exceptions
-    def create(self, key, dictionary):
-        """
-        [string, dict<string, object>]
-        """
-        # FIXME: what is this. How is this different from insert?
-        pass
-    
-    @handle_java_exceptions
-    def create_all(self, values):
-        """
-        [dict<string, dict<string, object>]
-        """
-        # FIXME: what is this. How is this different from insert?
-        pass
     
     @handle_java_exceptions
     def find_by_id(self, key, list_of_column_names=None):
@@ -34,7 +18,7 @@ class Table(object):
         iterator = document_stream.iterator()
 
         while iterator.hasNext():
-            yield Document(iterator.next(), columns_to_retain=columns)
+            yield Document(java_to_python_cast(iterator.next()), columns_to_retain=columns)
       
     @handle_java_exceptions
     def find(self, columns=None):

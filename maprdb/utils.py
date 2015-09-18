@@ -10,9 +10,44 @@ logger = logging.getLogger(__name__)
 class MapRDBError(Exception):
     pass
 
+def is_based_on_class(java_class, class_name_to_find):
+    if java_class == None:
+        return False
+    
+    if java_class.getName() == class_name_to_find or is_based_on_class(java_class.getSuperclass(), class_name_to_find):
+        return True
+
+    for implemented_interface in java_class.getBaseInterfaces():
+        if is_based_on_class(implemented_interface, class_name_to_find):
+            return True
+        
+        
 def java_to_python_cast(value):
-    # TODO: fix this
-    raise Exception("Not yet implemented!")
+    java_class = value.__javaclass__ if hasattr(value,'__javaclass__') else None
+
+    if is_based_on_class(java_class,'java.lang.Number'):
+        return value.value
+    elif is_based_on_class(java_class,'java.util.Date'):
+        return datetime.datetime(1900 + value.getYear(), 1 + value.getMonth(), \
+                                 value.getDate(), value.getHours(), \
+                                 value.getMinutes(), value.getSeconds(), int(value.getNanos()/1000))
+    elif is_based_on_class(java_class, 'java.util.List'):
+        new_value = []
+        it = value.iterator()
+        while it.hasNext():
+            new_value.append(java_to_python_cast(it.next()))
+        return new_value
+    elif is_based_on_class(java_class, 'java.util.Map'):
+        new_value = {}
+        it = value.keySet().iterator()
+        
+        while it.hasNext():
+            k = java_to_python_cast(it.next())
+            v = java_to_python_cast(value.get(k))
+            new_value[k] = v
+        return new_value
+    
+    return value
 
 def python_to_java_cast(value):
     if '_get_java_object' in dir(value):
@@ -29,7 +64,7 @@ def python_to_java_cast(value):
         return jmap
     elif isinstance(value, datetime.datetime):
         time = jpype.java.sql.Timestamp(value.year - 1900, value.month - 1, value.day,
-                                        value.hour, value.minute, value.second, 0)
+                                        value.hour, value.minute, value.second, 1000*value.microsecond)
         return time
     elif isinstance(value, datetime.date):
         date = jpype.java.sql.Date(value.year - 1900, value.month, value.day)

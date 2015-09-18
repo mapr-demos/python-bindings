@@ -6,19 +6,12 @@ class Document(dict):
             dict_retained = {k:v for (k,v) in d.items() if k in columns_to_retain}
         else:
             dict_retained = d
+            
         super().__init__(dict_retained, *args, **kwargs)
         
     @staticmethod
     def python_document_from_java(java_object, columns_to_retain=None):
-        result_dict = {}
-        it = java_object.keySet().iterator()
-        
-        while it.hasNext():
-            key = java_to_python_cast(it.next())
-            value = java_to_python_cast(java_object.get(key))
-            result_dict[key] = value
-            
-        return Document(result_dict, columns_to_retain=columns_to_retain)
+        return Document(java_to_python_cast(java_object), columns_to_retain=columns_to_retain)
             
         
     def _get_java_object(self):
