@@ -10,6 +10,9 @@ class Condition(object):
     You can pass dict or list to constructor:
     >> c = Condition([{ "country": "China"}, {"age": 34}])
     >> c = Condition({"country": "China", "age": 34})
+
+    List of conditions converts to OR clause
+    Dict of conditions converts to AND clause
     """
     def __init__(self, initial=None):
         if not jpype.isJVMStarted():

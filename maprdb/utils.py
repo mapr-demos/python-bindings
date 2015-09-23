@@ -10,19 +10,25 @@ logger = logging.getLogger(__name__)
 class MapRDBError(Exception):
     pass
 
+
 def is_based_on_class(java_class, class_name_to_find):
     if java_class == None:
         return False
-    
+
     if java_class.getName() == class_name_to_find or is_based_on_class(java_class.getSuperclass(), class_name_to_find):
         return True
 
     for implemented_interface in java_class.getBaseInterfaces():
         if is_based_on_class(implemented_interface, class_name_to_find):
             return True
-        
-        
+
+
 def java_to_python_cast(value):
+    """
+    Converts java object to corresponding python value
+    :param value: java object
+    :returns: corresponding python value
+    """
     java_class = value.__javaclass__ if hasattr(value,'__javaclass__') else None
 
     if is_based_on_class(java_class,'java.lang.Number'):
@@ -49,7 +55,13 @@ def java_to_python_cast(value):
     
     return value
 
+
 def python_to_java_cast(value):
+    """
+    Converts python value to corresponding java object
+    :param value: python value
+    :returns: corresponding java object
+    """
     if '_get_java_object' in dir(value):
         return value._get_java_object()
     elif isinstance(value, (tuple, list)):
@@ -87,6 +99,9 @@ def handle_java_exceptions(f):
         except jpype.JavaException as e:
             logger.debug(e.stacktrace())
             raise MapRDBError(str(e)) from e
+        except RuntimeError as e:
+            if "No matching overloads found" in str(e):
+                raise TypeError(str(e))
 
         return ret
     return wrapper

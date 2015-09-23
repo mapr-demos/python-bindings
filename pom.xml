@@ -35,7 +35,7 @@
     <dependency>
       <groupId>com.mapr.db</groupId>
       <artifactId>maprdb</artifactId>
-      <version>4.14.14-jsonmerge-SNAPSHOT</version>
+      <version>5.0.9-mapr-SNAPSHOT</version>
     </dependency>
   </dependencies>
 

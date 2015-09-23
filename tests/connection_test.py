@@ -8,6 +8,7 @@ from maprdb.document import Document
 from tests.base import BaseMapRDBTest
 from maprdb.mutation import Mutation
 
+
 class TestMapRDBConnection(BaseMapRDBTest):
     def test_no_two_jvm(self):
         self.assertRaises(Exception, maprdb.connect)
@@ -29,12 +30,12 @@ class TestMapRDBConnection(BaseMapRDBTest):
         
         table1.update(document1_key, mutation1)
         table1.flush()
-        
         self.assertEqual(table1.find_by_id(document1_key), document1)
         
         document2 = Document({'some_number': 33, 
                           'some_float': 3.1,
                           'some_string': 'str',
+                          'some_string2': 'abc',
                           'some_date': datetime.datetime(2015, 9, 10, 12, 27, 35),
                           'some_list': [5,6,7],
                           'some_dict': {'a': 7, 'b':6.25}
@@ -57,19 +58,23 @@ class TestMapRDBConnection(BaseMapRDBTest):
         
         mutation1 = Mutation().increment("some_number", 4).\
         append("some_list", [1,2,3]).\
+        append("some_string2", "def").\
         delete("some_string").\
         decrement("some_float", 1.0).\
+        set("some_new_field", 123).\
         build()      
 
         table1.update(document2_key, mutation1)
         table1.flush()
         
         expected_document = {'some_number': 37, 
+                             'some_string2': 'abcdef',
                              'some_float': 2.1, 
                              'some_date': datetime.datetime(2015, 9, 10, 12, 27, 35), 
                              'some_list': [5, 6, 7, 1, 2, 3], 
                              '_id': document2_key, 
-                             'some_dict': {'b': 6.25, 'a': 7}
+                             'some_dict': {'b': 6.25, 'a': 7},
+                             'some_new_field': 123
         }
         self.assertEqual(table1.find_by_id(document2_key), expected_document)
 
@@ -107,16 +112,19 @@ class TestMapRDBConnection(BaseMapRDBTest):
         self.assertEqual(result2, expected_result2)
 
         self.assertEqual(len([x for x in table1.find()]), 2)
-        table1.delete(document2_key)
-        table1.flush()
-        self.assertEqual(len([x for x in table1.find()]), 1)
-        table1.delete(document3_key)
+        table1.delete([document2_key,document3_key])
         table1.flush()
         self.assertEqual(len([x for x in table1.find()]), 0)
+        
+        self.assertIsNone(table1.find_by_id("non_existing_document"))
         
         table1.delete(document1_key)
         self.connection.delete("/tmp/test_table")
         self.assertFalse(self.connection.exists("/tmp/test_table"))
+
+    def test_typeerror_raise(self):
+        with self.assertRaises(TypeError):
+            self.connection.exists(42)  # parameter should be string
 
 
 if __name__ == "__main__":

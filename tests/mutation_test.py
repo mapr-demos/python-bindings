@@ -3,6 +3,7 @@ import logging
 from maprdb import Mutation
 from tests.base import BaseMapRDBTest
 
+
 class TestConnection(BaseMapRDBTest):
     def test_append(self):
         mutation = Mutation().set("sfasfa",[542.3,12.3,4.4,12.5])\
