@@ -1,6 +1,7 @@
 import jpype
 import logging
 from multipledispatch import dispatch
+from maprdb import Connection
 from maprdb.utils import handle_java_exceptions, python_to_java_cast, MapRDBError
 
 
@@ -36,7 +37,7 @@ class Condition(object):
 
     @handle_java_exceptions
     def _create_condition(self):
-        self._MapRDB = jpype.JClass("com.mapr.db.MapRDB")
+        self._MapRDB = Connection.get_instance().MapRDB
         self.java_condition = self._MapRDB.newCondition()
         if self._initial:
             self._parse_condition(self._initial)
