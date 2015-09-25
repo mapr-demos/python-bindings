@@ -93,10 +93,14 @@ class TestShorthandConditions(BaseMapRDBTest):
         self.assertEqual(c.java_condition.toString(), '(age = null)')
 
     def test_like(self):
-        self.assertRaises(NotImplementedError, Condition, {"age": {"$like": "1024 V.*"}})
+        c = Condition({"age": {"$like": "1024 V.*"}})
+        with self.assertRaises(NotImplementedError):
+            c._get_java_object()
 
     def test_not_like(self):
-        self.assertRaises(NotImplementedError, Condition, {"age": {"!$like": "1024 V.*"}})
+        c = Condition({"age": {"!$like": "1024 V.*"}})
+        with self.assertRaises(NotImplementedError):
+            c._get_java_object()
 
 
 if __name__ == "__main__":

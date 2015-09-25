@@ -102,6 +102,7 @@ def handle_java_exceptions(f):
         except RuntimeError as e:
             if "No matching overloads found" in str(e):
                 raise TypeError(str(e))
+            raise e
 
         return ret
     return wrapper
@@ -117,7 +118,7 @@ class Singleton(type):
 
     def get_instance(cls, *args, **kwargs):
         if cls.instance and (args or kwargs):
-            raise Exception("Cannot change parameters of singleton during runtime")
+            logger.warn("Cannot change parameters of singleton during runtime")
 
         if cls.instance is None:
             cls.instance = super(Singleton, cls).__call__(*args, **kwargs)

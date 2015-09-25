@@ -4,6 +4,12 @@ import copy
 
 
 class Table(object):
+    """
+    Python wrapper for com.mapr.db.Table object.
+    
+    This class is usually not instantiated by user,
+    but returned from methods of maprdb.connection.Connection.get and maprdb.connection.Connection.create.
+    """
     def __init__(self, java_table):
         self.java_table = java_table
     
@@ -20,17 +26,17 @@ class Table(object):
         :returns: maprdb.document.Document class instance, 
         which is the document found. If document was not found returns None.
         """
-        java_document = self.java_table.findById(key)
+        java_document = self.java_table.findById(key, columns) if columns else self.java_table.findById(key)
         if java_document:
-            return Document.python_document_from_java(java_document, columns_to_retain=python_to_java_cast(columns))
+            return Document.python_document_from_java(java_document)
         else:
             return None
         
-    def _find_by_java_document_stream(self, document_stream, columns=None):
+    def _find_by_java_document_stream(self, document_stream):
         iterator = document_stream.iterator()
 
         while iterator.hasNext():
-            yield Document(java_to_python_cast(iterator.next()), columns_to_retain=columns)
+            yield Document(java_to_python_cast(iterator.next()))
       
     @handle_java_exceptions
     def find(self, columns=None):
@@ -41,8 +47,8 @@ class Table(object):
         specifies certain columns to select from the returned document.
         :returns: generator, which returns maprdb.document.Document class instances.
         """
-        document_stream = self.java_table.find()
-        return self._find_by_java_document_stream(document_stream, columns=columns)
+        document_stream = self.java_table.find(columns) if columns else self.java_table.find()
+        return self._find_by_java_document_stream(document_stream)
 
     
     def find_by_condition(self, condition, columns=None):
@@ -54,19 +60,18 @@ class Table(object):
         specifies certain columns to select from the returned document.
         :returns: generator, which returns maprdb.document.Document class instances.
         """
-        document_stream = self.java_table.find(python_to_java_cast(condition))
-        return self._find_by_java_document_stream(document_stream, columns=columns)
+        document_stream = self.java_table.find(python_to_java_cast(condition), columns) if columns else self.java_table.find(python_to_java_cast(condition))
+        return self._find_by_java_document_stream(document_stream)
     
     def _fill_document_key(self, doc, key=None):
-        doc = copy.copy(doc)
         if '_id' not in doc:
             if key is None:
                 raise MapRDBError("No key or _id property in document is specified.")
+            doc = copy.copy(doc)
             doc['_id'] = key
         else:
             if not key is None:
                 raise MapRDBError("Both key and _id property in document are specified.")
-          
         return doc
     
     @handle_java_exceptions
@@ -75,7 +80,7 @@ class Table(object):
         Insert the document in the database. If the document already exists,
         maprdb.utils.MapRDBError is raised 
         
-        @param doc: maprdb.document.Document class instance, that should have an _id field. If not present an exception should be raised. 
+        :param doc: maprdb.document.Document class instance, that should have an _id field. If not present an exception should be raised. 
         If the user specific a key, it will be added to the document automatically as _id field, if the document contains an _id and a key is passed, an maprdb.utils.MapRDBError will be raised.
         Finally if a document with this key already exist maprdb.utils.MapRDBError will be raised by the server as well.
         :param key: string value, which is _id of the record to find.
@@ -88,7 +93,7 @@ class Table(object):
         """
         Insert the document in the database. If the document already exists, it gets replaced.
         
-        @param doc: maprdb.document.Document class instance, that should have an _id field. If not present an exception should be raised. 
+        :param doc: maprdb.document.Document class instance, that should have an _id field. If not present an exception should be raised. 
         If the user specific a key, it will be added to the document automatically as _id field, if the document contains an _id and a key is passed, an maprdb.utils.MapRDBError will be raised.
         :param key: string value, which is _id of the record to find.
         """
@@ -114,7 +119,7 @@ class Table(object):
         """
         For every dictionary entry, performs the requested mutation on the document with the specified key(s).
         
-        @param values: dict value, which as key has a key of document to update, and as a value has a mutation,
+        :param values: dict value, which as key has a key of document to update, and as a value has a mutation,
         to perform on it. 
         """
         for k in values.keys():

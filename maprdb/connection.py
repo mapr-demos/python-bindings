@@ -6,7 +6,7 @@ from jpype import startJVM, getDefaultJVMPath, isJVMStarted
 
 from maprdb import JARS_LIST
 from maprdb.tables import Table
-from maprdb.utils import Singleton, MapRDBError, handle_java_exceptions
+from maprdb.utils import Singleton, handle_java_exceptions
 
 logger = logging.getLogger(__name__)
 
@@ -46,9 +46,11 @@ class Connection(object, metaclass=Singleton):
 
     @handle_java_exceptions
     def _open(self):
-        if isJVMStarted():
-            raise MapRDBError("JVM is already started. Only one connection can be opened.")
         logger.info("Starting JVM")
+        if isJVMStarted():
+            logger.warn("JVM is already started. Only one connection can be opened,"
+                        "previously created connection will be used.")
+            return
 
         startJVM(getDefaultJVMPath(), *self._jvm_args())
 

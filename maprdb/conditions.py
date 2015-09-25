@@ -1,6 +1,10 @@
 import jpype
+import logging
 from multipledispatch import dispatch
 from maprdb.utils import handle_java_exceptions, python_to_java_cast, MapRDBError
+
+
+logger = logging.getLogger(__name__)
 
 
 class Condition(object):
@@ -15,17 +19,27 @@ class Condition(object):
     Dict of conditions converts to AND clause
     """
     def __init__(self, initial=None):
-        if not jpype.isJVMStarted():
-            raise MapRDBError("Open connection first")
-        self._MapRDB = jpype.JClass("com.mapr.db.MapRDB")
-        self._Condition = jpype.JClass("com.mapr.db.Condition")
-        self._create_condition()
-        if initial:
-            self._parse_condition(initial)
+        self._java_condition = None
+        self._MapRDB = None
+        self._initial = initial
+
+    @property
+    def java_condition(self):
+        if self._java_condition is None:
+            logger.debug("'Condition' Java object creation requested")
+            self._create_condition()
+        return self._java_condition
+
+    @java_condition.setter
+    def java_condition(self, value):
+        self._java_condition = value
 
     @handle_java_exceptions
     def _create_condition(self):
+        self._MapRDB = jpype.JClass("com.mapr.db.MapRDB")
         self.java_condition = self._MapRDB.newCondition()
+        if self._initial:
+            self._parse_condition(self._initial)
 
     @handle_java_exceptions
     def _and(self):
