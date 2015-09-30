@@ -46,13 +46,13 @@ def java_to_python_cast(value):
     elif is_based_on_class(java_class, 'java.util.Map'):
         new_value = {}
         it = value.keySet().iterator()
-        
+
         while it.hasNext():
             k = java_to_python_cast(it.next())
             v = java_to_python_cast(value.get(k))
             new_value[k] = v
         return new_value
-    
+
     return value
 
 
@@ -84,7 +84,7 @@ def python_to_java_cast(value):
     elif isinstance(value, datetime.time):
         time = jpype.java.sql.Time(value.hour, value.minute, value.second)
         return time
-    
+
     return value
 
 
@@ -118,8 +118,12 @@ class Singleton(type):
 
     def get_instance(cls, *args, **kwargs):
         if cls.instance and (args or kwargs):
-            logger.warn("Cannot change parameters of singleton during runtime")
+            if cls.__args != (args, kwargs):
+                logger.warn("Cannot change parameters of connection.")
+            logger.warn("Only one connection can be opened, "
+                        "previously created connection will be used.")
 
         if cls.instance is None:
             cls.instance = super(Singleton, cls).__call__(*args, **kwargs)
+        cls.__args = args, kwargs
         return cls.instance
