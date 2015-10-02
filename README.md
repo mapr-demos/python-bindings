@@ -1,14 +1,32 @@
 # python-bindings
 Python bindings for MapR DB JSON API
 
-## How to Build
+## How to install
 Requirements:
 
   - Python 3
   - Maven - `mvn` command should be in PATH.
   - GCC and python headers could be required to build dependencies
 
-To install this package run
+You can install the package via pip
+
+    # pip install maprdb
+    Collecting maprdb
+    Collecting JPype1==0.6.1 (from maprdb)
+    Collecting multipledispatch (from maprdb)
+      Downloading multipledispatch-0.4.8.tar.gz
+    Building wheels for collected packages: maprdb, JPype1, multipledispatch
+      Running setup.py bdist_wheel for maprdb
+      Running setup.py bdist_wheel for JPype1
+      Running setup.py bdist_wheel for multipledispatch
+    Successfully built maprdb JPype1 multipledispatch
+    Installing collected packages: JPype1, multipledispatch, maprdb
+    Successfully installed JPype1-0.6.1 maprdb-0.0.2 multipledispatch-0.4.8
+
+
+Note that this may take several minutes because of downloading maven dependencies.
+
+Alternatively, you can install this package from source. To do it, clone this repository and run
 
     python setup.py install
 
