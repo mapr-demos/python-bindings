@@ -24,7 +24,7 @@ class TestMapRDBConnection(BaseMapRDBTest):
         self.assertTrue(self.connection.exists("/tmp/test_table"))
 
         # add datetime datetime
-        document1_key = "test_table_1"
+        document1_key = "doc1"
         document1 = Document({'_id': document1_key, 'count': 7})
         table1.insert_or_replace(document1)
 
@@ -53,7 +53,7 @@ class TestMapRDBConnection(BaseMapRDBTest):
 
         table_docs_shorted = [x for x in table1.find(columns=['some_float', 'some_string'])]
         self.assertEqual(len(table_docs_shorted), 1)
-        self.assertEqual(table_docs_shorted[0], {'_id': 'test_table_1', 'some_string': 'str', 'some_float': 3.1})
+        self.assertEqual(table_docs_shorted[0], {'_id': 'doc1', 'some_string': 'str', 'some_float': 3.1})
 
         all_table_docs = [x for x in table1.find()]
         self.assertEqual(len(all_table_docs), 1)
@@ -140,6 +140,8 @@ class TestMapRDBConnection(BaseMapRDBTest):
         table1.delete(document1_key)
         self.connection.delete("/tmp/test_table")
         self.assertFalse(self.connection.exists("/tmp/test_table"))
+
+        table1.close()
 
     def test_typeerror_raise(self):
         with self.assertRaises(TypeError):

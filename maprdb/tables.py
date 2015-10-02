@@ -37,6 +37,7 @@ class Table(object):
 
         while iterator.hasNext():
             yield Document(java_to_python_cast(iterator.next()))
+        document_stream.close()
 
     @handle_java_exceptions
     def find(self, columns=None):
@@ -144,3 +145,10 @@ class Table(object):
         Operations may be flushed by the library before the flush is requested.
         """
         self.java_table.flush()
+
+    @handle_java_exceptions
+    def close(self):
+        """
+        Close table. This method should always be called after using the table.
+        """
+        self.java_table.close()

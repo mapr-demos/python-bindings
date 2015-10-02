@@ -1,2 +1,4 @@
 include pom.xml
-include maprdb/dependency/*.jar
+exclude maprdb/dependency/*.jar
+include spec.md
+include LICENSE
