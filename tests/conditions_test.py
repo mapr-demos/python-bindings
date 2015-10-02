@@ -23,17 +23,17 @@ class TestFluentConditions(BaseMapRDBTest):
 
     def test_time(self):
         now = datetime.datetime.now().time()
-        utc_now = datetime.datetime.utcnow().time()  # maprdb converts to UTC
         c = Condition(). \
             _is("t", Op.EQUAL, now)
-        self.assertEqual(c.java_condition.toString(), '(t = {"$time":"%s"})' % utc_now.strftime("%H:%M:%S"))
+        self.assertEqual(c.java_condition.toString(), '(t = {"$time":"%s"})' % now.strftime("%H:%M:%S"))
 
     def test_timestamp(self):
         now = datetime.datetime.now().replace(microsecond=0)
-        utc_now = datetime.datetime.utcnow().replace(microsecond=0)  # maprdb converts to UTC
+        delta = now - datetime.datetime.utcnow().replace(microsecond=0)
+        hh,mm = divmod((delta.days * 24*60*60 + delta.seconds + 30) // 60, 60)
         c = Condition(). \
             _is("t", Op.EQUAL, now)
-        self.assertEqual(c.java_condition.toString(), '(t = {"$date":"%s.000Z"})' % utc_now.isoformat())
+        self.assertEqual(c.java_condition.toString(), '(t = {"$date":"%s.000%+03d:%02d"})' % (now.isoformat(), hh, mm))
 
 
 class TestShorthandConditions(BaseMapRDBTest):

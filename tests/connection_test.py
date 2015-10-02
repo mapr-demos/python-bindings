@@ -1,3 +1,4 @@
+import time, sys
 import unittest
 import logging
 import maprdb
@@ -18,21 +19,30 @@ class TestMapRDBConnection(BaseMapRDBTest):
     def test_create_table(self):
         if self.connection.exists("/tmp/test_table"):
             self.connection.delete("/tmp/test_table")
-
         self.assertFalse(self.connection.exists("/tmp/test_table"))
-        table1 = self.connection.create("/tmp/test_table")
+
+        self.connection.create("/tmp/test_table")
         self.assertTrue(self.connection.exists("/tmp/test_table"))
+
+    def test_integration(self):
+        """
+        Comprehensive test which includes most of features
+        """
+        if self.connection.exists("/tmp/test_table2"):
+            self.connection.delete("/tmp/test_table2")
+        table1 = self.connection.create("/tmp/test_table2")
 
         # add datetime datetime
         document1_key = "doc1"
         document1 = Document({'_id': document1_key, 'count': 7})
         table1.insert_or_replace(document1)
+        table1.flush()
 
         mutation1 = Mutation().increment('count', 5)
-
         table1.update(document1_key, mutation1)
         table1.flush()
-        self.assertEqual(table1.find_by_id(document1_key), document1)
+
+        self.assertEqual(table1.find_by_id(document1_key)['count'], 12)
 
         document2 = Document({'some_number': 33,
                           'some_float': 3.1,
@@ -104,7 +114,7 @@ class TestMapRDBConnection(BaseMapRDBTest):
                           'some_list': ['a', 'b', 'c'],
                           'some_dict': {'zyx': 1, 'abc':64.25}
         })
-        document3_key = "test_table_2"
+        document3_key = "doc3"
         table1.insert(document3, key=document3_key)
         table1.flush()
 
@@ -138,8 +148,8 @@ class TestMapRDBConnection(BaseMapRDBTest):
         self.assertIsNone(table1.find_by_id("non_existing_document"))
 
         table1.delete(document1_key)
-        self.connection.delete("/tmp/test_table")
-        self.assertFalse(self.connection.exists("/tmp/test_table"))
+        self.connection.delete("/tmp/test_table2")
+        self.assertFalse(self.connection.exists("/tmp/test_table2"))
 
         table1.close()
 
