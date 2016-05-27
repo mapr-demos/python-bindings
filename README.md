@@ -30,6 +30,14 @@ Alternatively, you can install this package from source. To do it, clone this re
 
     python setup.py install
 
+Note that the setup script requires `setuptools`. You can find more information about how to install `setuptools` here:
+
+https://pypi.python.org/pypi/setuptools
+
+Note also that if you have both python 2.* and 3.* on your system, you may need to run
+
+    python3 setup.py install
+
 ## Running unit tests
 
   - Add /etc/hosts entry like `172.16.42.129	maprdemo` that points to the instance with MapRDB running
