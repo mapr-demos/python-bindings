@@ -19,14 +19,14 @@
     <repository>
       <id>mapr-releases</id>
       <url>http://repository.mapr.com/maven/</url>
-      <snapshots><enabled>true</enabled></snapshots>
+      <snapshots><enabled>false</enabled></snapshots>
       <releases><enabled>true</enabled></releases>
     </repository>
 
     <repository>
       <id>mapr-private</id>
       <url> http://repository_cv.mapr.com/maven/</url>
-      <snapshots><enabled>true</enabled></snapshots>
+      <snapshots><enabled>false</enabled></snapshots>
       <releases><enabled>true</enabled></releases>
     </repository>
   </repositories>
@@ -35,7 +35,7 @@
     <dependency>
       <groupId>com.mapr.db</groupId>
       <artifactId>maprdb</artifactId>
-      <version>5.0.9-mapr-SNAPSHOT</version>
+      <version>5.1.0-mapr</version>
     </dependency>
   </dependencies>
 
