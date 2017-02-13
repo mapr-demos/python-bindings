@@ -1,53 +1,74 @@
 # python-bindings
-Python bindings for MapR DB JSON API
+This package supplies the source code for the Python bindings for the MapR Open JSON Application Interface.  More information on OJAI can be found [https://www.mapr.com/blog/faster-application-development-open-json-application-interface-ojai](here).
 
-## How to install
+## Quickstart
+
+The package was tested on a Centos 7.2 system but instructions and functionality are likely similar on others.  The instructions assume 'python3' and 'pip3' are used to select the Python 3 tools in your environment, if you do not have parallel Python 2 and Python 3 installations, you may only need to use 'python' and 'pip'.
+
+### Installing prerequisites
+
 Requirements:
 
-  - Python 3
+  - Python 3 and pip 3
   - Maven - `mvn` command should be in PATH.
-  - GCC and python headers could be required to build dependencies
+  - GCC-c++ and python headers could be required to build dependencies
 
-You can install the package via pip
+If your package manager is setup correctly, you can satisfy these dependencies with:
 
-    # pip install maprdb
-    Collecting maprdb
-    Collecting JPype1==0.6.1 (from maprdb)
-    Collecting multipledispatch (from maprdb)
-      Downloading multipledispatch-0.4.8.tar.gz
-    Building wheels for collected packages: maprdb, JPype1, multipledispatch
-      Running setup.py bdist_wheel for maprdb
-      Running setup.py bdist_wheel for JPype1
-      Running setup.py bdist_wheel for multipledispatch
-    Successfully built maprdb JPype1 multipledispatch
-    Installing collected packages: JPype1, multipledispatch, maprdb
-    Successfully installed JPype1-0.6.1 maprdb-0.0.2 multipledispatch-0.4.8
+```
+sudo yum install python34 python34-pip python34-devel gcc gcc-c++ wget
+sudo wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo
+sudo yum install apache-maven
+```
 
+### Configuring the connection to a MapR cluster
 
-Note that this may take several minutes because of downloading maven dependencies.
+Ensure that you have the correct MapR configuration on the machine where you are running this software.  If you are running scripts on a MapR node, no additional steps are necessary.  If you are running scripts on a non-MapR node and want to attach to a MapR cluster, an easy way to get a base client configuration is to install the 'mapr-client' package as follows.  
 
-Alternatively, you can install this package from source. To do it, clone this repository and run
+```
+sudo yum install mapr-client
+```
+Alternatively, a pre-configured Docker container client is available [https://www.mapr.com/blog/getting-started-mapr-client-container](with instructions here).
 
-    python setup.py install
+Whether or not you install the above package, at a minimum you must create and/or edit the file '/opt/mapr/conf/clusters.conf' and add the name of your cluster followed by the CLDB node and port.  For example, if your cluster name is demo.mapr.com and the CLDB node is 'maprdemo', you should have a single line in this file that looks like:
+
+```
+demo.mapr.com maprdemo:7222
+```
+And an entry in '/etc/hosts'/ for the 'maprdemo' hostname.  The [http://mapr.com/download](MapR Sandbox) is configured with the names used here.
+
+### Option 1:  Installing from packages
+
+Install the package via 'pip3' as follows.  This is an unbuilt source distribution and may take a few minutes to gather dependencies.
+
+```
+sudo pip3 install maprdb
+```
+Note that this may take several minutes.
+
+### Option 2:  Installing from source
+
+Alternatively, you can install this package from source. To do it, clone this repository and run the installer as follows:
+
+```
+git clone https://github.com/mapr-demos/python-bindings
+cd python-bindings
+sudo python3 setup.py install
+```
 
 Note that the setup script requires `setuptools`. You can find more information about how to install `setuptools` here:
 
 https://pypi.python.org/pypi/setuptools
 
-Note also that if you have both python 2.* and 3.* on your system, you may need to run
+With the source installation you have the option of running the unit tests.  First ensure that 'pytest' is installed, then run the tests as follows.  You must have configured your MapR connection in the above steps for this to complete successfully.
 
-    python3 setup.py install
-
-## Running unit tests
-
-  - Add /etc/hosts entry like `172.16.42.129	maprdemo` that points to the instance with MapRDB running
-  - Run unit tests
 ```
-pip install pytest
+sudo pip3 install pytest
 py.test
 ```
 
 ## Note
+
 The empty dependencies directory is used at build time. Maven will
 download all necessary dependent jars and put them in this directory.
 
