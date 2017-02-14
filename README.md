@@ -1,9 +1,9 @@
 # python-bindings
-This package supplies the source code for the Python bindings for the MapR Open JSON Application Interface.  More information on OJAI can be found [https://www.mapr.com/blog/faster-application-development-open-json-application-interface-ojai](here).
+This package supplies the source code for the Python bindings for the MapR Open JSON Application Interface.  More information on OJAI can be found [here](https://www.mapr.com/blog/faster-application-development-open-json-application-interface-ojai).
 
 ## Quickstart
 
-The package was tested on a Centos 7.2 system but instructions and functionality are likely similar on others.  The instructions assume 'python3' and 'pip3' are used to select the Python 3 tools in your environment, if you do not have parallel Python 2 and Python 3 installations, you may only need to use 'python' and 'pip'.
+The package was tested on a Centos 7.2 system but the installation instructions and functionality are likely similar on others.  The below instructions assume 'python3' and 'pip3' are used to select the Python 3 tools in your environment.  If you do not have parallel Python 2 and Python 3 installations you may only need to use 'python' and 'pip'.
 
 ### Installing prerequisites
 
