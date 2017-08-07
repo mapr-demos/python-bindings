@@ -7,7 +7,7 @@ the MapR-DB JSON API, also known as the Open JSON Application Interface
 
   - Python 3
   - Maven - the `mvn` command should be in the $PATH.
-  - GCC and Python headers may be required to build dependencies
+  - GCC (for C and C++) and Python headers may be required to build dependencies
   - The `mapr-client` must be installed and configured, or run the module directly on MapR node.
 
 ## Quickstart
