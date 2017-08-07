@@ -1,4 +1,4 @@
-.# python-bindings
+# python-bindings
 This repo hosts a Python module that implements lightweight bindings for
 the MapR-DB JSON API, also known as the Open JSON Application Interface
 (OJAI).
