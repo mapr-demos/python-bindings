@@ -136,12 +136,14 @@ for a full example.
 
 Common configuration issues/errors are found here.
 
-
-* Exception `MapRDBError: com.mapr.db.exceptions.DBException: method()
+#### Cannot connect to the cluster
+```
+Exception `MapRDBError: com.mapr.db.exceptions.DBException: method()
 failed.` along with a line in the log:
 `ERROR Client fs/client/fileclient/cc/client.cc:864
 Thread: 4187 Failed to initialize client for cluster demo.mapr.com,
 error Connection reset by peer(104)`
+```
 
 The MapR-DB host(s) are not accessible.  Check your `mapr-clusters.conf` file
 or review the documentation for client-side configurations [here](http://maprdocs.mapr.com/home/AdvancedInstallation/SettingUptheClient-mapr-client.html).
@@ -149,16 +151,20 @@ this means that host with MapRDB
 you're trying to connect to is not accessible, check your connect()
 call and `mapr-clusters.conf` file.
 
-* `maprdb.connect()` returns connection with warning "Only one
+#### Calling connect() multiple times in your code
+
+`maprdb.connect()` returns connection with warning `"Only one
  connection can be opened, previously created connection
-will be used."
+will be used."`
 
 This happens because your code called connect() several
 times. Only one connection can be opened during one Python interpreter
 session, so `connect()` always returns very first opened connection.
 See the above section under Additional Notes for details.
 
-* ERROR JniCommon fs/client/fileclient/cc/jni_MapRClient.cc:684
+#### Java .jars version mismatch with native version
+```
+ERROR JniCommon fs/client/fileclient/cc/jni_MapRClient.cc:684
 Thread: 47421 Mismatch found for java and native libraries java build
 version 5.2.1.42646.GA, native build version 6.0.0.44429.BETA java
 patch vserion $Id: mapr-version: 5.2.1.42646.GA 42646:812878ab1269
@@ -166,9 +172,26 @@ $, native patch version $Id: mapr-version: 6.0.0.44429.BETA
 44429:e7073547c8a7fd5262b96 2017-08-02 18:55:35,2082 ERROR JniCommon
 fs/client/fileclient/cc/jni_MapRClient.cc:701 Thread: 47421 Client
 initialization failed.
+```
 
-The MapR version in your `pom.xml` file (or the one installed with the
-package distribution) may mismatch your installed MapR version.
-Rebuild/reinstall from source using the above steps.
+There are a few ways to fix this.
+
+First make sure that the MapR version in your `pom.xml` file (or the one installed with the
+package distribution) matches your installed MapR version.
+After changing, rebuild/reinstall from source using the above steps.
+
+A simple way to synchronize the .jar files from an existing MapR installation to the
+jars used to build this module is to run the following steps -- note that this requires 
+that you are building the package with at least the ```mapr-client``` package installed.
+
+```
+# git clone https://github.com/mapr-demos/python-bindings
+# cd python-bindings
+# python3 setup.py build
+# for j in build/lib/maprdb/dependency/*.jar; do F=$(basename $j) ; if [ -f /opt/mapr/lib/$F ]; then cp /opt/mapr/lib/$F build/lib/maprdb/dependency/; fi done
+# sudo python3 setup.py install
+```
+
+
 
 
