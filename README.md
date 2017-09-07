@@ -101,8 +101,7 @@ will return the same connection with a warning message.
 ## Example Usage
 
 Also see
-[this demo repo]
-(https://github.com/mapr-demos/maprdb_python_examples)
+[this demo repo](https://github.com/mapr-demos/maprdb_python_examples)
 for a full example.
     
     from maprdb import connect, Document, Mutation
