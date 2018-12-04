@@ -1,3 +1,8 @@
+# DEPRECATED This is no longer supported, please consider using the [maprdb-python-client](https://pypi.org/project/maprdb-python-client/#description) package instead.
+
+See MapR documentation:
+https://mapr.com/docs/home/MapR-DB/JSON_DB/GettingStartedPythonOJAI.html
+
 # python-bindings
 This repo hosts a Python module that implements lightweight bindings for
 the MapR-DB JSON API, also known as the Open JSON Application Interface
