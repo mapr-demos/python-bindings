@@ -1,4 +1,4 @@
-# DEPRECATED This is no longer supported, please consider using the [maprdb-python-client](https://pypi.org/project/maprdb-python-client/#description) package instead.
+Please consider using the [maprdb-python-client](https://pypi.org/project/maprdb-python-client/#description) package instead.
 
 See MapR documentation:
 https://mapr.com/docs/home/MapR-DB/JSON_DB/GettingStartedPythonOJAI.html
